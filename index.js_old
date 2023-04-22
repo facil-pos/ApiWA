@@ -1,0 +1,99 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+app.use(bodyParser.json()); // Soporte para JSON en el cuerpo de las solicitudes
+
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const qrcode = require('qrcode');
+
+const clients = {};
+
+// Ruta para obtener el estado de conexión de un cliente
+for (let i = 1; i <= 10; i++) {
+  const clientId = `client${i}`;
+  clients[clientId] = new Client({
+    authStrategy: new LocalAuth({ clientId }),
+  });
+}
+
+let qrCodes = {}; // Almacena los códigos QR generados por cada cliente
+
+// Crea un cliente para cada número de teléfono
+for (const [clientId, client] of Object.entries(clients)) {
+    client.on('qr', (qr) => {
+        qrCodes[clientId] = qr; // Almacena el código QR en la variable qrCodes
+        console.log(`QR ${clientId}`); // Se ejecuta cuando se genera un código QR
+    });
+
+    client.on('ready', () => {
+        console.log(`${clientId} Conectado con Exito!`); // Se ejecuta cuando el cliente se conecta con éxito
+    });
+
+    client.initialize(); // Inicializa el cliente
+}
+
+// Ruta para obtener la imagen del código QR
+app.get('/qrcode/:clientId', async (req, res) => {
+    const clientId = req.params.clientId;
+
+    if (!qrCodes[clientId]) {
+        res.sendStatus(404);
+        return;
+    }
+    try {
+        // Genera la imagen del código QR utilizando el paquete qrcode
+        const qrImage = await qrcode.toBuffer(qrCodes[clientId], { scale: 4 }); // Escala la imagen 4 veces
+        
+        // Envía la imagen del código QR como respuesta
+        res.writeHead(200, {
+            'Content-Type': 'image/png',
+            'Content-Length': qrImage.length,
+        });
+        res.end(qrImage); 
+    } catch (error) {
+        console.error(error);
+        res.sendStatus(500);
+    }
+});
+
+// Maneja las solicitudes POST para enviar mensajes
+app.post('/sendMessage', (req, res) => {
+    const { client, numbers, message } = req.body; // Obtiene los datos del cuerpo de la solicitud
+
+
+    if (!clients[client]) {
+        console.log(`Cliente ${client} no encontrado`); // Se ejecuta cuando el cliente no se encuentra
+        res.status(404).json({ error: `Cliente ${client} no encontrado` }); // Envía una respuesta de error
+        return;
+    }
+
+    for (const number of numbers) {
+        clients[client].sendMessage(`${number}@c.us`, message); // Envia el mensaje
+    }
+
+    res.status(200).json({ success: 'Mensajes enviados con éxito' }); // Envía una respuesta de éxito
+});
+
+// Maneja las solicitudes POST para enviar imagenes
+app.post('/sendImage', (req, res) => {
+    const { client, numbers, message, imageFilePath } = req.body; // Obtiene los datos del cuerpo de la solicitud
+
+    if (!clients[client]) { 
+        console.log(`Cliente ${client} no encontrado`); // Se ejecuta cuando el cliente no se encuentra
+        res.status(404).json({ error: `Cliente ${client} no encontrado` }); // Envía una respuesta de error
+        return;
+    }
+
+    const media = MessageMedia.fromFilePath(imageFilePath); // Crea un objeto MessageMedia a partir de la ruta de la imagen
+
+    for (const number of numbers) {
+        clients[client].sendImage(`${number}@c.us`, media, { caption: message }); // Envia el mensaje
+    }
+
+    res.status(200).json({ success: 'Imagen enviada con éxito' }); // Envía una respuesta de éxito
+});
+
+app.listen(3000, () => {
+    console.log('Servidor ejecutándose en el puerto 3000'); // Se ejecuta cuando el servidor se inicia
+});
