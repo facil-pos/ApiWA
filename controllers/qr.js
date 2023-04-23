@@ -21,7 +21,7 @@ function generateQrCodes(clients) {
 // Obtiene la imagen del código QR correspondiente al ID del cliente
 async function getQrImage(clientId) {
   if (!qrCodes[clientId]) {
-    throw new Error('QR code not found');
+    throw new Error('QR code not found'); 
   }
 
   const qrImage = await qrcode.toBuffer(qrCodes[clientId], { scale: 4 }); // Escala la imagen 4 veces
