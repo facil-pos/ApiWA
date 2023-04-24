@@ -1,19 +1,37 @@
-require('dotenv').config();
-
 const express = require('express');
+const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 
-app.use(bodyParser.json()); // Soporte para JSON en el cuerpo de las solicitudes
+const loginController = require('./controllers/login');
+const clients = require('./controllers/clients');
+const { generateQrCodes, getQrImage } = require('./controllers/qr');
+const messagesRouter = require('./controllers/messages');
+const registerRouter = require('./controllers/register'); // Importa el enrutador de register
 
-const clients = require('./controllers/clients'); // Importa los clientes
-const { generateQrCodes, getQrImage } = require('./controllers/qr'); // Importa las funciones para generar y obtener los códigos QR
-const messagesRouter = require('./controllers/messages'); // Importa el router para manejar las solicitudes POST
+app.use(bodyParser.json());
 
-generateQrCodes(clients); // Genera los códigos QR para cada cliente
+app.use(session({
+    secret: 'clave-secreta',
+    resave: false,
+    saveUninitialized: true
+}));
 
-// Ruta para obtener la imagen del código QR
-app.get('/qrcode/:clientId', async (req, res) => {
+app.use('/register', registerRouter); // Utiliza el enrutador de register en la ruta /register
+
+app.post('/login', loginController.login); // Utiliza la función de login importada
+
+const requireLogin = (req, res, next) => {
+    if (req.session && req.session.user) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+};
+
+generateQrCodes(clients);
+
+app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
     const clientId = req.params.clientId; // Obtiene el ID del cliente de los parámetros de la solicitud
 
     try {
@@ -29,9 +47,8 @@ app.get('/qrcode/:clientId', async (req, res) => {
     }
 });
 
-// Utiliza el router creado en messages.js para manejar las solicitudes POST
 app.use(messagesRouter);
 
 app.listen(3000, () => {
-    console.log('Servidor ejecutándose en el puerto 3000'); // Se ejecuta cuando el servidor se inicia
+    console.log('Servidor ejecutándose en el puerto 3000');
 });
