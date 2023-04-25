@@ -2,7 +2,15 @@ const express = require('express');
 const router = express.Router();
 const clients = require('./clients');
 
-router.post('/sendMessage', (req, res) => {
+const requireLogin = (req, res, next) => {
+    if (req.session && req.session.user) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+};
+
+router.post('/sendMessage', requireLogin, (req, res) => {
     const { client, numbers, message } = req.body; // Obtiene los datos del cuerpo de la solicitud
 
     if (!clients[client]) {
