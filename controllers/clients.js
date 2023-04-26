@@ -17,11 +17,12 @@ const clients = {};
 for (let i = 1; i <= 2; i++) {
   const clientId = `client${i}`;
   clients[clientId] = new Client({
-    authStrategy: new LocalAuth({ clientId }),
+    authStrategy: new LocalAuth({ clientId }),  
     puppeteer: {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    },    
+    },
   });
-  
+
 }
+
 module.exports = clients;

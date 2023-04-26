@@ -6,6 +6,7 @@ function generateQrCodes(clients) {
     client.on('qr', (qr) => {
       qrCodes[clientId] = qr; // Almacena el código QR en la variable qrCodes
       console.log(`QR ${clientId}`); // Se ejecuta cuando se genera un código QR
+      
     });
     client.on('ready', () => {
       console.log(`${clientId} Conectado con Exito!`); // Se ejecuta cuando el cliente se conecta con éxito

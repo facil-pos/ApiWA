@@ -3,12 +3,15 @@ const router = express.Router();
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 
+const clients = require('./clients.js');
+
+
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'facilpos',
-    password: '1234',
-    port: 5432,
+  user: 'postgres',
+  host: 'localhost',
+  database: 'facilpos',
+  password: '1234',
+  port: 5432,
 });
 
 router.post('/', async (req, res) => {
@@ -34,5 +37,4 @@ router.post('/', async (req, res) => {
         res.status(500).send('Error del servidor');
     }
 });
-
 module.exports = router;
