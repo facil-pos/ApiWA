@@ -23,10 +23,11 @@ router.post('/', async (req, res) => {
     // Hashear la contraseña del usuario
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
+    const numMsgs = 50;
 
     // Insertar el usuario en la base de datos
     try {
-        const newUser = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *', [username, hashedPassword]);
+        const newUser = await pool.query('INSERT INTO users (username, password, num_msgs) VALUES ($1, $2, $3) RETURNING *', [username, hashedPassword, numMsgs]);
         res.status(201).send(newUser.rows[0]);
     } catch (err) {
         console.error(err);

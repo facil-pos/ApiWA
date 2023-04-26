@@ -1,13 +1,14 @@
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
+require('dotenv').config();
 
 // Configuración de la conexión a la base de datos
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'facilpos',
-    password: '1234',
-    port: 5432,
+    user: process.env.USER,
+    host: process.env.HOST,
+    database: process.env.DATABASE,
+    password: process.env.PASSWORD,
+    port: process.env.PORT,
 });
 
 async function login(req, res) {
@@ -36,5 +37,3 @@ async function login(req, res) {
 module.exports = {
     login
 };
-
-
