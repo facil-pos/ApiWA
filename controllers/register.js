@@ -3,9 +3,6 @@ const router = express.Router();
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 
-const clients = require('./clients.js');
-
-
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
