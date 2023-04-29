@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const clients = require('./clients');
 const { Pool } = require('pg');
+require('dotenv').config();
 
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'facilpos',
-    password: '1234',
-    port: 5432,
+    user: process.env.USER,
+    host: process.env.HOST,
+    database: process.env.DATABASE,
+    password: process.env.PASSWORD,
+    port: process.env.PORT,
 });
 
 const requireLogin = (req, res, next) => {
@@ -32,10 +33,16 @@ router.post('/sendMessage', requireLogin, (req, res) => {
         clients[client].sendMessage(`${number}@c.us`, message); // Envia el mensaje
     }
 
-    const query = {
+    /* const query = {
         text: 'INSERT INTO message(client, numbers, message, created_at, updated_at) VALUES($1, $2, $3, $4, $5)',
         values: [client, numbers.join(','), message, new Date(), new Date()],
+    }; */
+
+    const query = {
+        text: 'INSERT INTO message(client, numbers, message, created_at, updated_at, usuario) VALUES($1, $2, $3, $4, $5, $6)',
+        values: [client, numbers.join(','), message, new Date(), new Date(), req.session.user], 
     };
+    
 
     pool.connect((err, client, done) => {
         if (err) throw err;

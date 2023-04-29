@@ -1,27 +1,66 @@
 const qrcode = require('qrcode');
 const qrCodes = {};
-// Genera los códigos QR para cada cliente
-function generateQrCodes(clients) {
+
+async function generateQrCodes(clients) {  // Agregamos async
   for (const [clientId, client] of Object.entries(clients)) {
-    client.on('qr', (qr) => {
-      qrCodes[clientId] = qr; // Almacena el código QR en la variable qrCodes
-      console.log(`QR ${clientId}`); // Se ejecuta cuando se genera un código QR
-      
-    });
-    client.on('ready', () => {
-      console.log(`${clientId} Conectado con Exito!`); // Se ejecuta cuando el cliente se conecta con éxito
+    const generateQrCode = new Promise((resolve, reject) => {
+      client.on('qr', (qr) => {
+        qrCodes[clientId] = qr;
+        console.log(`QR ${clientId}`);
+      });
+
+      client.on('ready', () => {
+        console.log(`${clientId} Conectado con Exito!`);
+        resolve();
+      });
+
+      client.initialize();
     });
 
-    client.initialize(); // Inicializa el cliente
+    // Espera a que la promesa se resuelva antes de continuar
+    await generateQrCode;
   }
 }
-// Obtiene la imagen del código QR correspondiente al ID del cliente
+
 async function getQrImage(clientId) {
   if (!qrCodes[clientId]) {
-    throw new Error('QR code not found'); 
+    throw new Error('QR code not found');
   }
 
-  const qrImage = await qrcode.toBuffer(qrCodes[clientId], { scale: 4 }); // Escala la imagen 4 veces
+  const qrImage = await qrcode.toBuffer(qrCodes[clientId], { scale: 4 });
   return qrImage;
 }
+
 module.exports = { generateQrCodes, getQrImage };
+
+
+
+
+
+/* const qrcode = require('qrcode');
+const qrCodes = {};
+
+function generateQrCodes(clients) { 
+  for (const [clientId, client] of Object.entries(clients)) {  // Recorre el objeto clients
+    client.on('qr', (qr) => { 
+      qrCodes[clientId] = qr; 
+      console.log(`QR ${clientId}`); // Muestra en consola el ID del cliente
+
+    });
+    client.on('ready', () => {
+      console.log(`${clientId} Conectado con Exito!`);
+    });
+
+    client.initialize();
+  }
+}
+
+async function getQrImage(clientId) {
+  if (!qrCodes[clientId]) {
+    throw new Error('QR code not found');
+  }
+
+  const qrImage = await qrcode.toBuffer(qrCodes[clientId], { scale: 4 });
+  return qrImage;
+}
+module.exports = { generateQrCodes, getQrImage }; */

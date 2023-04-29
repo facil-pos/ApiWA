@@ -14,7 +14,7 @@ module.exports = clients; */
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const clients = {};
-for (let i = 1; i <= 2; i++) {
+for (let i = 1; i <= 50; i++) {
   const clientId = `client${i}`;
   clients[clientId] = new Client({
     authStrategy: new LocalAuth({ clientId }),  
@@ -24,5 +24,4 @@ for (let i = 1; i <= 2; i++) {
   });
 
 }
-
 module.exports = clients;

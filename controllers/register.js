@@ -2,13 +2,16 @@ const express = require('express');
 const router = express.Router();
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
+require('dotenv').config();
 
+
+// Configuración de la conexión a la base de datos
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'facilpos',
-  password: '1234',
-  port: 5432,
+    user: process.env.USER,
+    host: process.env.HOST,
+    database: process.env.DATABASE,
+    password: process.env.PASSWORD,
+    port: process.env.PORT,
 });
 
 router.post('/', async (req, res) => {
@@ -34,4 +37,5 @@ router.post('/', async (req, res) => {
         res.status(500).send('Error del servidor');
     }
 });
+
 module.exports = router;
