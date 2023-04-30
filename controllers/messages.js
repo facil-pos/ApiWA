@@ -1,16 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const clients = require('./clients');
-const { Pool } = require('pg');
+/* const { Pool } = require('pg'); */
 require('dotenv').config();
 
-const pool = new Pool({
+const pool = require('../db/db');
+
+/* const pool = new Pool({
     user: process.env.USER,
     host: process.env.HOST,
     database: process.env.DATABASE,
     password: process.env.PASSWORD,
     port: process.env.PORT,
-});
+}); */
 
 const requireLogin = (req, res, next) => {
     if (req.session && req.session.user) {
@@ -32,22 +34,14 @@ router.post('/sendMessage', requireLogin, (req, res) => {
     for (const number of numbers) {
         clients[client].sendMessage(`${number}@c.us`, message); // Envia el mensaje
     }
-
-    /* const query = {
-        text: 'INSERT INTO message(client, numbers, message, created_at, updated_at) VALUES($1, $2, $3, $4, $5)',
-        values: [client, numbers.join(','), message, new Date(), new Date()],
-    }; */
-
     const query = {
         text: 'INSERT INTO message(client, numbers, message, created_at, updated_at, usuario) VALUES($1, $2, $3, $4, $5, $6)',
-        values: [client, numbers.join(','), message, new Date(), new Date(), req.session.user], 
+        values: [client, numbers.join(','), message, new Date(), new Date(), req.session.user.username],
     };
-    
-
     pool.connect((err, client, done) => {
         if (err) throw err;
 
-        client.query(query, (err, result) => {
+        client.query(query, (err) => {
             done();
             if (err) {
                 console.log(err.stack);

@@ -214,3 +214,11 @@ router.post('/sendMessage', requireLogin, (req, res) => {
 });
 
 module.exports = router; */
+
+
+//MESSAGE.JS 29/4
+
+    /* const query = {
+        text: 'INSERT INTO message(client, numbers, message, created_at, updated_at) VALUES($1, $2, $3, $4, $5)',
+        values: [client, numbers.join(','), message, new Date(), new Date()],
+    }; */
