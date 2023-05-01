@@ -4,9 +4,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const loginController = require('./controllers/login');
-
 const clients = require('./controllers/clients');
-
 const { generateQrCodes, getQrImage } = require('./controllers/qr');
 const messagesRouter = require('./controllers/messages');
 const registerRouter = require('./controllers/register'); // Importa el enrutador de register
@@ -20,7 +18,6 @@ app.use(session({
 }));
 
 app.use('/register', registerRouter);
-
 app.post('/login', loginController.login);
 app.post('/logout', loginController.logout);
 

@@ -1,19 +1,19 @@
-/* const { Client, LocalAuth } = require('whatsapp-web.js');
+const { Client, LocalAuth } = require('whatsapp-web.js');
 
 const clients = {};
 
 // Crea un cliente para cada número de teléfono
-for (let i = 1; i <= 2; i++) {
+for (let i = 1; i <= 100; i++) {
   const clientId = `client${i}`;
   clients[clientId] = new Client({
     authStrategy: new LocalAuth({ clientId }),
   });
 }
 
-module.exports = clients; */
+module.exports = clients;
 
 //PARA LOCAL
-const { Client, LocalAuth } = require('whatsapp-web.js');
+/* const { Client, LocalAuth } = require('whatsapp-web.js');
 const clients = {};
 for (let i = 1; i <= 50; i++) {
   const clientId = `client${i}`;
@@ -25,7 +25,7 @@ for (let i = 1; i <= 50; i++) {
   });
 
 }
-module.exports = clients;
+module.exports = clients; */
 
 
 //PARA SERVIDOR

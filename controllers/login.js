@@ -1,17 +1,7 @@
-/* const { Pool } = require('pg'); */
 const bcrypt = require('bcrypt');
 require('dotenv').config();
-
 const pool = require('../db/db');
 
-// Configuración de la conexión a la base de datos
-/* const pool = new Pool({
-    user: process.env.USER,
-    host: process.env.HOST,
-    database: process.env.DATABASE,
-    password: process.env.PASSWORD,
-    port: process.env.PORT,
-}); */
 async function login(req, res) {
     const { username, password, role } = req.body; // Obtener el parámetro role del cuerpo de la solicitud
 
@@ -44,7 +34,6 @@ async function logout(req, res) {
         }
     });
 }
-
 module.exports = {
     login,
     logout
@@ -53,7 +42,7 @@ module.exports = {
 
 
 
-
+//OLD
 /* const { Pool } = require('pg');
 const bcrypt = require('bcrypt'); 
 require('dotenv').config();

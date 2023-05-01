@@ -1,20 +1,8 @@
 const express = require('express');
 const router = express.Router();
-/* const { Pool } = require('pg'); */
 const bcrypt = require('bcrypt');
 require('dotenv').config();
-
 const pool = require('../db/db');
-
-
-/* // Configuración de la conexión a la base de datos
-const pool = new Pool({
-    user: process.env.USER,
-    host: process.env.HOST,
-    database: process.env.DATABASE,
-    password: process.env.PASSWORD,
-    port: process.env.PORT,
-}); */
 
 router.post('/', async (req, res) => {
     const { username, password } = req.body;

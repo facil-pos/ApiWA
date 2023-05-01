@@ -1,9 +1,9 @@
 const qrcode = require('qrcode');
 const qrCodes = {};
 
-async function generateQrCodes(clients) {  // Agregamos async
+async function generateQrCodes(clients) {
   for (const [clientId, client] of Object.entries(clients)) {
-    const generateQrCode = new Promise((resolve, reject) => {
+    const generateQrCode = new Promise((resolve) => {
       client.on('qr', (qr) => {
         qrCodes[clientId] = qr;
         console.log(`QR ${clientId}`);

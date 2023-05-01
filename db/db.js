@@ -10,7 +10,7 @@ const pool = new Pool({
     port: process.env.PORT,
 });
 
-process.on('SIGINT', () => {
+/* process.on('SIGINT', () => {
   console.log('Closing PostgreSQL pool');
   pool.end()
     .then(() => {
@@ -21,6 +21,6 @@ process.on('SIGINT', () => {
       console.error('Error closing PostgreSQL pool', err);
       process.exit(1);
     });
-});
+}); */
 
 module.exports = pool;
