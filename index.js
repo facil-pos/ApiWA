@@ -2,12 +2,12 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
-
+const pool = require('./db/db');
 const loginController = require('./controllers/login');
 const clients = require('./controllers/clients');
-const { generateQrCodes, getQrImage } = require('./controllers/qr');
+const { generateQrCodes, getQrImage, savedClientId } = require('./controllers/qr');
 const messagesRouter = require('./controllers/messages');
-const registerRouter = require('./controllers/register'); // Importa el enrutador de register
+const registerRouter = require('./controllers/register');
 
 app.use(bodyParser.json());
 
@@ -29,13 +29,13 @@ const requireLogin = (req, res, next) => {
         res.redirect('/login');
     }
 };
-generateQrCodes(clients); // Genera los códigos QR para cada cliente
+generateQrCodes(clients);
 
 app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
-    const clientId = req.params.clientId; // Obtiene el ID del cliente de los parámetros de la solicitud
-
+    console.log(savedClientId);
+    const clientId = req.params.clientId;
     try {
-        const qrImage = await getQrImage(clientId); // Obtiene la imagen del código QR correspondiente al ID del cliente
+        const qrImage = await getQrImage(clientId);
         res.writeHead(200, {
             'Content-Type': 'image/png',
             'Content-Length': qrImage.length,
@@ -43,7 +43,18 @@ app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
         res.end(qrImage);
     } catch (error) {
         console.error(error);
-        res.sendStatus(404); // En caso de error, envía un código 404
+        res.sendStatus(404);
+    }
+    const query = {
+        text: 'UPDATE users SET client = $1 WHERE username = $2',
+        values: [clientId, req.session?.user?.username],
+    };
+
+    try {
+        await pool.query(query);
+        console.log(`Cliente ${clientId} actualizado para el usuario ${req.session?.user?.username}`);
+    } catch (error) {
+        console.error(`Error al actualizar el cliente para el usuario ${req.session?.user?.username}: ${error}`);
     }
 });
 

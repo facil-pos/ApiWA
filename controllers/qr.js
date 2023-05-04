@@ -1,12 +1,16 @@
 const qrcode = require('qrcode');
+const pool = require('../db/db');
 const qrCodes = {};
+
+let savedClientId;
 
 async function generateQrCodes(clients) {
   for (const [clientId, client] of Object.entries(clients)) {
     const generateQrCode = new Promise((resolve) => {
       client.on('qr', (qr) => {
         qrCodes[clientId] = qr;
-        console.log(`QR ${clientId}`);
+        console.log(`QR ${clientId}`); 
+        return res(`QR ${clientId}`);
       });
 
       client.on('ready', () => {
@@ -31,7 +35,7 @@ async function getQrImage(clientId) {
   return qrImage;
 }
 
-module.exports = { generateQrCodes, getQrImage };
+module.exports = { generateQrCodes, getQrImage, savedClientId };
 
 
 
