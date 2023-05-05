@@ -8,6 +8,7 @@ const clients = require('./controllers/clients');
 const { generateQrCodes, getQrImage, savedClientId } = require('./controllers/qr');
 const messagesRouter = require('./controllers/messages');
 const registerRouter = require('./controllers/register');
+const usersRouter = require('./routes/usersRouter');
 
 app.use(bodyParser.json());
 
@@ -17,7 +18,7 @@ app.use(session({
     saveUninitialized: true
 }));
 
-app.use('/register', registerRouter);
+app.use('/register', registerRouter); 
 app.post('/login', loginController.login);
 app.post('/logout', loginController.logout);
 
@@ -57,6 +58,8 @@ app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
         console.error(`Error al actualizar el cliente para el usuario ${req.session?.user?.username}: ${error}`);
     }
 });
+
+app.use('/users', usersRouter);
 
 app.use(messagesRouter);
 
