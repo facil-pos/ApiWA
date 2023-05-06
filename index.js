@@ -26,7 +26,6 @@ const requireLogin = (req, res, next) => {
     if (req.session && req.session.user) {
         next();
     } else {
-        //el user no esta conectado
         res.redirect('/login');
     }
 };
@@ -47,7 +46,7 @@ app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
         res.sendStatus(404);
     }
     const query = {
-        text: 'UPDATE users SET client = $1 WHERE username = $2',
+        text: 'UPDATE users SET client = $1, updated_at = NOW() WHERE username = $2',
         values: [clientId, req.session?.user?.username],
     };
 
@@ -62,6 +61,8 @@ app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
 app.use('/users', usersRouter);
 
 app.use(messagesRouter);
+
+module.exports = requireLogin;
 
 app.listen(3000, () => {
     console.log('Servidor ejecutándose en el puerto 3000');

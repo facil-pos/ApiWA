@@ -20,8 +20,8 @@ router.post('/', async (req, res) => {
 
     // Insertar el usuario en la base de datos
     try {
-        const newUser = await pool.query('INSERT INTO users (username, password, num_msgs) VALUES ($1, $2, $3) RETURNING *', [username, hashedPassword, numMsgs]);
-        res.status(201).send(newUser.rows[0]);
+        const newUser = await pool.query('INSERT INTO users (username, password, num_msgs, created_at) VALUES ($1, $2, $3, $4) RETURNING *', [username, hashedPassword, numMsgs, new Date()]);
+        res.status(201).send(newUser.rows[0]); 
     } catch (err) {
         console.error(err);
         res.status(500).send('Error del servidor');
