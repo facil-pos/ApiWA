@@ -8,6 +8,7 @@ const clients = require('./controllers/clients');
 const { generateQrCodes, getQrImage, savedClientId } = require('./controllers/qr');
 const messagesRouter = require('./controllers/messages');
 const registerRouter = require('./controllers/register');
+const userRouter = require('./routes/userRouter');
 const usersRouter = require('./routes/usersRouter');
 
 app.use(bodyParser.json());
@@ -60,6 +61,7 @@ app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
     }
 });
 
+app.use('/user', userRouter);
 app.use('/users', usersRouter);
 
 app.use(messagesRouter);
