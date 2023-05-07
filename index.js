@@ -19,7 +19,7 @@ app.use(session({
     saveUninitialized: true
 }));
 
-app.use('/register', registerRouter); 
+app.use('/register', registerRouter);
 app.post('/login', loginController.login);
 app.post('/logout', loginController.logout);
 app.post('/disableUser', loginController.disableUser);
@@ -37,7 +37,34 @@ generateQrCodes(clients);
 app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
     console.log(savedClientId);
     const clientId = req.params.clientId;
+
+    // Check if the username already exists in the 'client' column
+    const checkDuplicateQuery = {
+        text: 'SELECT COUNT(*) FROM users WHERE client = $1',
+        values: [clientId],
+    };
+
     try {
+        const result = await pool.query(checkDuplicateQuery);
+        const duplicateCount = result.rows[0].count;
+
+        if (duplicateCount > 0) {
+            // If a duplicate exists, set the 'client' column to NULL for the previous entry
+            const clearPreviousClientQuery = {
+                text: 'UPDATE users SET client = NULL, updated_at = NOW() WHERE client = $1',
+                values: [clientId],
+            };
+            await pool.query(clearPreviousClientQuery);
+        }
+
+        // Update the current user's 'client' column
+        const updateClientQuery = {
+            text: 'UPDATE users SET client = $1, updated_at = NOW() WHERE username = $2',
+            values: [clientId, req.session?.user?.username],
+        };
+        await pool.query(updateClientQuery);
+        console.log(`Cliente ${clientId} actualizado para el usuario ${req.session?.user?.username}`);
+
         const qrImage = await getQrImage(clientId);
         res.writeHead(200, {
             'Content-Type': 'image/png',
@@ -45,19 +72,8 @@ app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
         });
         res.end(qrImage);
     } catch (error) {
-        console.error(error);
-        res.sendStatus(404);
-    }
-    const query = {
-        text: 'UPDATE users SET client = $1, updated_at = NOW() WHERE username = $2',
-        values: [clientId, req.session?.user?.username],
-    };
-
-    try {
-        await pool.query(query);
-        console.log(`Cliente ${clientId} actualizado para el usuario ${req.session?.user?.username}`);
-    } catch (error) {
         console.error(`Error al actualizar el cliente para el usuario ${req.session?.user?.username}: ${error}`);
+        res.sendStatus(500);
     }
 });
 

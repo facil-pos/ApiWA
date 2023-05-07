@@ -324,3 +324,127 @@ router.post('/sendMessage', requireLogin, (req, res) => {
 });
 
 module.exports = router; */
+
+
+
+//message.js 7/5
+/* const express = require('express');
+const router = express.Router();
+const pool = require('../db/db');
+const clients = require('./clients');
+
+router.post('/sendMessage', async (req, res) => {
+    const { numbers, message } = req.body;
+    const queryUser = {
+        text: 'SELECT client FROM users WHERE username = $1',
+        values: [req.session?.user?.username],
+    };
+    const clientUser = (await pool.query(queryUser))?.rows?.[0]?.client;
+
+    if (!clientUser) {
+        console.error(`Cliente no encontrado en la sesión del usuario`);
+        return res.status(404).json({ error: `Cliente no encontrado en la sesión del usuario` });
+    }
+    if (!Array.isArray(numbers) || !numbers.length) {
+        console.error(`Los números proporcionados no son válidos`);
+        return res.status(400).json({ error: 'Los números proporcionados no son válidos' });
+    }
+    if (typeof message !== 'string' || !message.trim()) {
+        console.error(`El mensaje proporcionado no es válido`);
+        return res.status(400).json({ error: 'El mensaje proporcionado no es válido' });
+    }
+    const numbersString = numbers.join(',');
+    const query = {
+        text: 'INSERT INTO message(client, numbers, message, created_at, usuario) VALUES($1, $2, $3, $4, $5)',
+        values: [clientUser, numbersString, message, new Date(), req.session?.user?.username],
+    };    
+    try {
+        const client = await pool.connect();
+        await client.query(query);
+        client.release();
+        console.log('Mensaje guardado en la base de datos');
+        res.status(200).json({ success: 'Mensajes enviados con éxito' });
+    } catch (err) {
+        console.error('Error al guardar mensaje en la base de datos:', err.stack);
+        res.status(500).json({ error: 'Error al guardar mensaje en la base de datos' });
+    }
+    for (const number of numbers) {
+        clients[clientUser].sendMessage(`${number}@c.us`, message);
+    }
+});
+module.exports = router; */
+
+//index.js 7/5
+/* const express = require('express');
+const session = require('express-session');
+const bodyParser = require('body-parser');
+const app = express();
+const pool = require('./db/db');
+const loginController = require('./controllers/login');
+const clients = require('./controllers/clients');
+const { generateQrCodes, getQrImage, savedClientId } = require('./controllers/qr');
+const messagesRouter = require('./controllers/messages');
+const registerRouter = require('./controllers/register');
+const userRouter = require('./routes/userRouter');
+const usersRouter = require('./routes/usersRouter');
+
+app.use(bodyParser.json());
+
+app.use(session({
+    secret: 'clave-secreta',
+    resave: false,
+    saveUninitialized: true
+}));
+
+app.use('/register', registerRouter); 
+app.post('/login', loginController.login);
+app.post('/logout', loginController.logout);
+app.post('/disableUser', loginController.disableUser);
+app.post('/enableUser', loginController.enableUser);
+
+const requireLogin = (req, res, next) => {
+    if (req.session && req.session.user) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+};
+generateQrCodes(clients);
+
+app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
+    console.log(savedClientId);
+    const clientId = req.params.clientId;
+    try {
+        const qrImage = await getQrImage(clientId);
+        res.writeHead(200, {
+            'Content-Type': 'image/png',
+            'Content-Length': qrImage.length,
+        });
+        res.end(qrImage);
+    } catch (error) {
+        console.error(error);
+        res.sendStatus(404);
+    }
+    const query = {
+        text: 'UPDATE users SET client = $1, updated_at = NOW() WHERE username = $2',
+        values: [clientId, req.session?.user?.username],
+    };
+
+    try {
+        await pool.query(query);
+        console.log(`Cliente ${clientId} actualizado para el usuario ${req.session?.user?.username}`);
+    } catch (error) {
+        console.error(`Error al actualizar el cliente para el usuario ${req.session?.user?.username}: ${error}`);
+    }
+});
+
+app.use('/user', userRouter);
+app.use('/users', usersRouter);
+
+app.use(messagesRouter);
+
+module.exports = requireLogin;
+
+app.listen(3000, () => {
+    console.log('Servidor ejecutándose en el puerto 3000');
+}); */
