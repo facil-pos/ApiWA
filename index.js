@@ -21,6 +21,8 @@ app.use(session({
 app.use('/register', registerRouter); 
 app.post('/login', loginController.login);
 app.post('/logout', loginController.logout);
+app.post('/disableUser', loginController.disableUser);
+app.post('/enableUser', loginController.enableUser);
 
 const requireLogin = (req, res, next) => {
     if (req.session && req.session.user) {
