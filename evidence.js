@@ -448,3 +448,32 @@ module.exports = requireLogin;
 app.listen(3000, () => {
     console.log('Servidor ejecutándose en el puerto 3000');
 }); */
+
+//QR 8/5
+/* const qrcode = require('qrcode');
+const qrCodes = {};
+
+function generateQrCodes(clients) { 
+  for (const [clientId, client] of Object.entries(clients)) {  // Recorre el objeto clients
+    client.on('qr', (qr) => { 
+      qrCodes[clientId] = qr; 
+      console.log(`QR ${clientId}`); // Muestra en consola el ID del cliente
+
+    });
+    client.on('ready', () => {
+      console.log(`${clientId} Conectado con Exito!`);
+    });
+
+    client.initialize();
+  }
+}
+
+async function getQrImage(clientId) {
+  if (!qrCodes[clientId]) {
+    throw new Error('QR code not found');
+  }
+
+  const qrImage = await qrcode.toBuffer(qrCodes[clientId], { scale: 4 });
+  return qrImage;
+}
+module.exports = { generateQrCodes, getQrImage }; */
