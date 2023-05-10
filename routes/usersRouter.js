@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const requireLogin = require('../middleware/requireLogin');
+const requireLoginAdmin = require('../middleware/requireLoginAdmin');
 
-router.get('/', async (req, res) => {
+router.get('/', requireLoginAdmin, async (req, res) => {
   const users = []; // Array para almacenar los usuarios conectados
   const sessions = req.sessionStore.sessions;
 
@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
   }
 
   if (users.length > 0) {
-    requireLogin, res.json({ users });
+    res.json({ users });
   } else {
     res.json({ Off: 'Sin usuarios conectados' });
   }
