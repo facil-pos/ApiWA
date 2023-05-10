@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 require('dotenv').config();
 const pool = require('../db/db');
 
+//Iniciar sesión
 async function login(req, res) {
     const { username, password, role } = req.body; 
     const user = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
@@ -27,7 +28,8 @@ async function login(req, res) {
     res.send('Inicio de sesión exitoso');
 }
 
-async function disableUser(req, res) {
+//Desactivar usuario
+async function disableUser(req, res) { 
     const { username } = req.body;
     
     try {
@@ -44,6 +46,7 @@ async function disableUser(req, res) {
     }
 }
 
+//Activar usuario
 async function enableUser(req, res) {
     const { username } = req.body;
     
@@ -61,6 +64,7 @@ async function enableUser(req, res) {
     }
 }
 
+//Cerrar sesión
 async function logout(req, res) {
     const username = req.session.user.username;
     req.session.destroy((err) => {

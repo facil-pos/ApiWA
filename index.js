@@ -25,13 +25,14 @@ app.post('/logout', loginController.logout);
 app.post('/disableUser', loginController.disableUser);
 app.post('/enableUser', loginController.enableUser);
 
-const requireLogin = (req, res, next) => {
+const requireLogin = require('./middleware/requireLogin');
+/* const requireLogin = (req, res, next) => {
     if (req.session && req.session.user) {
         next();
     } else {
         res.redirect('/login');
     }
-};
+}; */
 generateQrCodes(clients);
 
 app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
@@ -77,7 +78,7 @@ app.use('/users', usersRouter);
 
 app.use(messagesRouter);
 
-module.exports = requireLogin;
+/* module.exports = requireLogin; */
 
 app.listen(3000, () => {
     console.log('Servidor ejecutándose en el puerto 3000');
