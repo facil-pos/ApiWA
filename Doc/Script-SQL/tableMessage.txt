@@ -1,0 +1,16 @@
+table message:
+-- public.message definition
+
+-- Drop table
+
+-- DROP TABLE public.message;
+
+CREATE TABLE public.message (
+	id serial4 NOT NULL,
+	client varchar NOT NULL,
+	numbers varchar NULL,
+	message text NULL,
+	created_at timestamptz NULL DEFAULT CURRENT_TIMESTAMP,
+	usuario varchar NULL,
+	CONSTRAINT message_pkey PRIMARY KEY (id)
+);
