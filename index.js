@@ -10,6 +10,7 @@ const messagesRouter = require('./controllers/messages');
 const registerRouter = require('./controllers/register');
 const userRouter = require('./routes/userRouter');
 const usersRouter = require('./routes/usersRouter');
+const requireLoginAdmin = require('./middleware/requireLoginAdmin');
 
 app.use(bodyParser.json());
 
@@ -22,8 +23,8 @@ app.use(session({
 app.use('/register', registerRouter);
 app.post('/login', loginController.login);
 app.post('/logout', loginController.logout);
-app.post('/disableUser', loginController.disableUser);
-app.post('/enableUser', loginController.enableUser);
+app.post('/disableUser', requireLoginAdmin, loginController.disableUser);
+app.post('/enableUser', requireLoginAdmin, loginController.enableUser);
 
 const requireLogin = require('./middleware/requireLogin');
 /* const requireLogin = (req, res, next) => {

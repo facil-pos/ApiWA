@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 require('dotenv').config();
 const pool = require('../db/db');
 
+
 //Iniciar sesión
 async function login(req, res) {
     const { username, password, role } = req.body; 
