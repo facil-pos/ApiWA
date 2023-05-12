@@ -6,6 +6,9 @@ const pool = require('../db/db');
 //Iniciar sesión
 async function login(req, res) {
     const { username, password, role } = req.body; 
+    if (username === '' || password === '') {
+        return res.status(401).send('Nombre de usuario o contraseña incorrectos');
+    }
     const user = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
     if (user.rows.length === 0) {
         return res.status(401).send('Nombre de usuario o contraseña incorrectos');

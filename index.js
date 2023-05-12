@@ -11,6 +11,7 @@ const registerRouter = require('./controllers/register');
 const userRouter = require('./routes/userRouter');
 const usersRouter = require('./routes/usersRouter');
 const requireLoginAdmin = require('./middleware/requireLoginAdmin');
+const requireLogin = require('./middleware/requireLogin');
 
 app.use(bodyParser.json());
 
@@ -22,18 +23,11 @@ app.use(session({
 
 app.use('/register', registerRouter);
 app.post('/login', loginController.login);
-app.post('/logout', loginController.logout);
+app.post('/logout', requireLogin, loginController.logout);
 app.post('/disableUser', requireLoginAdmin, loginController.disableUser);
 app.post('/enableUser', requireLoginAdmin, loginController.enableUser);
 
-const requireLogin = require('./middleware/requireLogin');
-/* const requireLogin = (req, res, next) => {
-    if (req.session && req.session.user) {
-        next();
-    } else {
-        res.redirect('/login');
-    }
-}; */
+
 generateQrCodes(clients);
 
 app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
@@ -79,7 +73,6 @@ app.use('/users', usersRouter);
 
 app.use(messagesRouter);
 
-/* module.exports = requireLogin; */
 
 app.listen(3000, () => {
     console.log('Servidor ejecutándose en el puerto 3000');

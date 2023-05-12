@@ -14,6 +14,7 @@ CREATE TABLE public.users (
 	created_at timestamptz NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at timestamptz NULL DEFAULT CURRENT_TIMESTAMP,
 	disabled bool NULL,
+	isadmin bool NULL,
 	CONSTRAINT users_pkey PRIMARY KEY (id),
 	CONSTRAINT users_username_key UNIQUE (username)
 );
