@@ -11,14 +11,14 @@ const pool = new Pool({
 });
 
 process.on('SIGINT', () => {
-  console.log('Closing PostgreSQL pool');
+  console.log('PostgreSQL pool cerrado');
   pool.end()
     .then(() => {
       console.log('PostgreSQL pool cerrado');
       process.exit(0);
     })
     .catch((err) => {
-      console.error('EError al cerrar PostgreSQL pool', err);
+      console.error('Error al cerrar PostgreSQL pool', err);
       process.exit(1);
     });
 });

@@ -10,7 +10,7 @@ router.post('/', async (req, res) => {
     // Verificar que el usuario no exista ya en la base de datos
     const existingUser = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
     if (existingUser.rows.length > 0) {
-        return res.status(409).send('El nombre de usuario ya está en uso');
+        return res.status(409).json({ error: 'El usuario ya existe' });
     }
 
     // Hashear la contraseña del usuario
@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
         res.status(201).send(newUser.rows[0]); 
     } catch (err) {
         console.error(err);
-        res.status(500).send('Error del servidor');
+        res.status(500).json({ error: 'Error al crear el usuario' });
     }
 });
 

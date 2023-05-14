@@ -3,22 +3,26 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 const pool = require('./db/db');
-const loginController = require('./controllers/login');
+const loginController = require('./controllers/userController');
 const clients = require('./controllers/clients');
-const { generateQrCodes, getQrImage } = require('./controllers/qr');
-const messagesRouter = require('./controllers/messages');
-const registerRouter = require('./controllers/register');
+const { generateQrCodes, getQrImage } = require('./controllers/qrController');
+const messagesRouter = require('./controllers/messagesController');
+const imagesRouter = require('./controllers/imagesController');
+const registerRouter = require('./controllers/registerController');
 const userRouter = require('./routes/userRouter');
 const usersRouter = require('./routes/usersRouter');
 const requireLoginAdmin = require('./middleware/requireLoginAdmin');
 const requireLogin = require('./middleware/requireLogin');
+require('./controllers/auth');
+require('dotenv').config();
 
 app.use(bodyParser.json());
 
+// Configuración de la sesión
 app.use(session({
-    secret: 'clave-secreta',
-    resave: false,
-    saveUninitialized: true
+    secret: process.env.JWT_SECRET, // Clave secreta para firmar el ID de la sesión
+    resave: false, // No guardar la sesión en cada petición
+    saveUninitialized: true // Guardar una sesión aunque no se inicialice
 }));
 
 app.use('/register', registerRouter);
@@ -26,12 +30,14 @@ app.post('/login', loginController.login);
 app.post('/logout', requireLogin, loginController.logout);
 app.post('/disableUser', requireLoginAdmin, loginController.disableUser);
 app.post('/enableUser', requireLoginAdmin, loginController.enableUser);
-
+app.use('/user', userRouter);
+app.use('/users', usersRouter);
+app.use(messagesRouter);
+app.use(imagesRouter);
 
 generateQrCodes(clients);
 
 app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
-    /* console.log(savedClientId); */
     const clientId = req.params.clientId;
     const checkDuplicateQuery = {
         text: 'SELECT COUNT(*) FROM users WHERE client = $1',
@@ -67,12 +73,6 @@ app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
         res.sendStatus(500);
     }
 });
-
-app.use('/user', userRouter);
-app.use('/users', usersRouter);
-
-app.use(messagesRouter);
-
 
 app.listen(3000, () => {
     console.log('Servidor ejecutándose en el puerto 3000');

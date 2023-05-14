@@ -1,8 +1,25 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const pool = require('../db/db');
 const clients = require('./clients');
 const requireLogin = require('../middleware/requireLogin');
+const fs = require('fs');
+const base64Img = require('base64-img');
+
+// Configuración de multer para almacenar las imágenes en memoria
+/* const upload = multer(); */
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/images'); // Directorio donde se guardarán las imágenes
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '_' + file.originalname); // Nombre de archivo único
+    }
+});
+
+// Cargar el almacenamiento de multer
+const upload = multer({ storage });
 
 // Obtener el límite máximo de mensajes permitidos por día para el usuario actual
 const getMaxMessageLimit = async (username) => {
@@ -27,8 +44,10 @@ const hasReachedMessageLimit = async (username) => {
     return messageCount >= maxMsgs;
 };
 
-router.post('/sendMessage', requireLogin, async (req, res) => {
-    const { numbers, message } = req.body;
+
+router.post('/sendImages', requireLogin, upload.array('images'), async (req, res) => {
+    const numbers = req.body.numbers.split(',');
+    const message = req.body.message;
     const username = req.session?.user?.username;
 
     const clientUser = (await pool.query({
@@ -58,9 +77,24 @@ router.post('/sendMessage', requireLogin, async (req, res) => {
 
     const numbersString = numbers.join(',');
 
+    // Obtener los nombres de archivo de las imágenes subidas
+    const imageNames = req.files.map((file) => {
+        // Guardar la imagen en disco
+        const imageName = Date.now() + '_' + file.originalname;
+        fs.writeFileSync('public/images/' + imageName, file.buffer);
+        return imageName;
+    });
+
+    /* const query = {
+        text: 'INSERT INTO message(client, numbers, message, images, created_at, usuario) VALUES($1, $2, $3, $4, $5, $6)',
+        values: [clientUser, numbersString, message, imageNames, new Date(), username],
+    }; */
+
+
+
     const query = {
-        text: 'INSERT INTO message(client, numbers, message, created_at, usuario) VALUES($1, $2, $3, $4, $5)',
-        values: [clientUser, numbersString, message, new Date(), username],
+        text: 'INSERT INTO message(client, numbers,message, images, created_at, usuario) VALUES($1, $2, $3, $4, $5, $6)',
+        values: [clientUser, numbersString, message, imageNames, new Date(), username],
     };
 
     try {
@@ -75,8 +109,9 @@ router.post('/sendMessage', requireLogin, async (req, res) => {
     }
 
     for (const number of numbers) {
-        clients[clientUser].sendMessage(`${number}@c.us`, message);
+        clients[clientUser].sendMessageWithMedia(`${number}@c.us`, message, imageNames);
     }
+
 });
 
 module.exports = router;

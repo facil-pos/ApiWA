@@ -1,7 +1,5 @@
 const jwt = require('jsonwebtoken');
-
-// Clave secreta para firmar los tokens JWT
-const JWT_SECRET = 'secret-key';
+require('dotenv').config();
 
 // Función para verificar si un usuario está autorizado
 function isAuthenticated(req, res, next) {
@@ -11,7 +9,7 @@ function isAuthenticated(req, res, next) {
     }
 
     try {
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
         next();
     } catch (error) {
@@ -26,7 +24,9 @@ function generateToken(user) {
         iat: Date.now(),
     };
 
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '30d' });
+    return token;
 }
 
 module.exports = { isAuthenticated, generateToken };
+
