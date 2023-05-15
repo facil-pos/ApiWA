@@ -19,8 +19,8 @@ async function login(req, res) {
     if (!validPassword) {
         return res.status(401).json({ error: 'Nombre de usuario o contraseña incorrectos' });
     }
-    //
-    if (user.rows.length === 0) {
+    //i
+/*     if (user.rows.length === 0) {
         return res.status(401).json({ error: 'Nombre de usuario o contraseña incorrectos' });
     }
 
@@ -34,16 +34,16 @@ async function login(req, res) {
 
     const token = generateToken(req.session.user); // Llamar a generateToken con req.session.user
 
-    res.json({ message: 'Inicio de sesión exitoso', token });
-    //
+    res.json({ message: 'Inicio de sesión exitoso', token }); */
+    //f
 
 
-    /* req.session.user = {
+    req.session.user = {
         id: user.rows[0].id,
         role: role,
         username: username
     };
-    res.json({ message:'Inicio de sesión exitoso'}); */
+    res.json({ message:'Inicio de sesión exitoso'});
 }
 
 //Desactivar usuario

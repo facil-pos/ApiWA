@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../db/db');
 const clients = require('./clients');
 const requireLogin = require('../middleware/requireLogin');
-const auth = require('./auth');
+/* const auth = require('./auth'); */
 
 // Obtener el límite máximo de mensajes permitidos por día para el usuario actual
 const getMaxMessageLimit = async (username) => {
@@ -28,7 +28,7 @@ const hasReachedMessageLimit = async (username) => {
     return messageCount >= maxMsgs;
 };
 
-router.post('/sendMessage', requireLogin, auth.isAuthenticated, async (req, res) => {
+router.post('/', async (req, res) => {
     const { numbers, message } = req.body;
     const username = req.session?.user?.username;
 

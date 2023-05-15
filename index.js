@@ -3,18 +3,14 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 const pool = require('./db/db');
-const loginController = require('./controllers/userController');
 const clients = require('./controllers/clients');
 const { generateQrCodes, getQrImage } = require('./controllers/qrController');
-const messagesRouter = require('./controllers/messagesController');
-const imagesRouter = require('./controllers/imagesController');
-const registerRouter = require('./controllers/registerController');
-const userRouter = require('./routes/userRouter');
-const usersRouter = require('./routes/usersRouter');
 const requireLoginAdmin = require('./middleware/requireLoginAdmin');
 const requireLogin = require('./middleware/requireLogin');
+/* const auth = require('./controllers/auth'); */
 require('./controllers/auth');
 require('dotenv').config();
+const routes = require('./routes/apiRoutes');
 
 app.use(bodyParser.json());
 
@@ -25,15 +21,7 @@ app.use(session({
     saveUninitialized: true // Guardar una sesión aunque no se inicialice
 }));
 
-app.use('/register', registerRouter);
-app.post('/login', loginController.login);
-app.post('/logout', requireLogin, loginController.logout);
-app.post('/disableUser', requireLoginAdmin, loginController.disableUser);
-app.post('/enableUser', requireLoginAdmin, loginController.enableUser);
-app.use('/user', userRouter);
-app.use('/users', usersRouter);
-app.use(messagesRouter);
-app.use(imagesRouter);
+app.use('/', routes); // Rutas de la API
 
 generateQrCodes(clients);
 
@@ -74,6 +62,6 @@ app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
     }
 });
 
-app.listen(3000, () => {
+app.listen(process.env.PORT, () => {
     console.log('Servidor ejecutándose en el puerto 3000');
 });
