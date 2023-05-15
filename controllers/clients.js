@@ -20,7 +20,7 @@ for (let i = 1; i <= 100; i++) {
     authStrategy: new LocalAuth({ clientId }),
   });
 
-  //Imagenes
+  /* //Imagenes
   const fs = require('fs');
   const base64Img = require('base64-img');
   clients[clientId].sendMessageWithMedia = async (phoneNumber, message, imageNames) => {
@@ -39,7 +39,7 @@ for (let i = 1; i <= 100; i++) {
         console.error(`Error al enviar la imagen ${imageName}:`, error);
       }
     }
-  };
+  }; */
 }
 
 module.exports = clients;

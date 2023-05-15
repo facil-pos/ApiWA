@@ -11,7 +11,7 @@ const pool = new Pool({
 });
 
 process.on('SIGINT', () => {
-  console.log('PostgreSQL pool cerrado');
+  console.log('PostgreSQL pool desconectado');
   pool.end()
     .then(() => {
       console.log('PostgreSQL pool cerrado');

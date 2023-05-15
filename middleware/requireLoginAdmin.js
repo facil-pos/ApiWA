@@ -1,6 +1,5 @@
 const pool = require('../db/db');
 //ORM
-// ver nueva forma de importar
 
 const requireLoginAdmin = (req, res, next) => {
   // Verificar si no hay ningún usuario conectado

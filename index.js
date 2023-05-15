@@ -62,6 +62,7 @@ app.get('/qrcode/:clientId', requireLogin, async (req, res) => {
     }
 });
 
-app.listen(process.env.PORT, () => {
-    console.log('Servidor ejecutándose en el puerto 3000');
+const port = process.env.PORT_S;
+app.listen(port, () => {
+    console.log(`Servidor iniciado en el puerto ${port}`);
 });
