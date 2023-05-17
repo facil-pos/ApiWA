@@ -59,9 +59,6 @@ generateQrCodes(clients);
     }
 }); */
 
-
-
-
 app.post('/qrcode', requireLogin, async (req, res) => {
     const clientId = req.body.clientId; // Obtener el clientId desde el cuerpo de la solicitud
 
@@ -101,9 +98,6 @@ app.post('/qrcode', requireLogin, async (req, res) => {
         res.sendStatus(500);
     }
 });
-
-
-
 
 const port = process.env.PORT_S;
 app.listen(port, () => {
