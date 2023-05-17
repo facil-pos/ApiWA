@@ -234,7 +234,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Usuario\",\r\n    \"password\": \"123456\"\r\n}"
+							"raw": "{\r\n    \"username\": \"Luigi\",\r\n    \"password\": \"123456\"\r\n}"
 						},
 						"url": {
 							"raw": "http://localhost:3000/register",
@@ -263,7 +263,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Usuario\",\r\n    \"password\": \"123456\"\r\n}"
+							"raw": "{\r\n    \"username\": \"Nico\",\r\n    \"password\": \"123456\"\r\n}"
 						},
 						"url": {
 							"raw": "http://localhost:3000/login",
@@ -301,25 +301,33 @@
 				{
 					"name": "qr",
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Authorization",
 								"value": "JWT $2b$10$pbH5X60QFEWjGec3K475iuJqAt6L5ItOW27KxFVS7Qtxk1B.mbplq",
 								"type": "text",
 								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"clientId\": \"client3\"\r\n}\r\n"
+						},
 						"url": {
-							"raw": "http://localhost:3000/qrcode/client1",
+							"raw": "http://localhost:3000/qrcode",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "3000",
 							"path": [
-								"qrcode",
-								"client1"
+								"qrcode"
 							]
 						}
 					},
@@ -333,11 +341,17 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImlhdCI6MTY4NDEyMTMyNjYyNiwiZXhwIjoxNjg0MTIzOTE4NjI2fQ.sagyRx_bVz-PhefGC3vO5NufZx2OfYhPUaiEdiALzps",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"numbers\": [\r\n        \r\n    ],\r\n    \"message\": \"Hola, mando msj como Nico\"\r\n}"
+							"raw": "{\r\n    \"numbers\": [\r\n        5492615011946\r\n    ],\r\n    \"message\": \"Hola, mando msj como Nico\"\r\n}"
 						},
 						"url": {
 							"raw": "http://localhost:3000/sendMessage",
@@ -404,7 +418,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"username\": \"Usuarioa\"\r\n}\r\n"
+							"raw": "{\r\n  \"username\": \"Nico\"\r\n}\r\n"
 						},
 						"url": {
 							"raw": "http://localhost:3000/disableUser",
@@ -433,7 +447,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"Usuarioa\"\r\n}"
+							"raw": "{\r\n    \"username\": \"Nico\"\r\n}"
 						},
 						"url": {
 							"raw": "http://localhost:3000/enableUser",
@@ -444,6 +458,51 @@
 							"port": "3000",
 							"path": [
 								"enableUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sendImages(beta)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "multipart/form-data",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "numbers",
+									"value": "5492615011946",
+									"type": "text"
+								},
+								{
+									"key": "message",
+									"value": "Hola",
+									"type": "text"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": "/C:/Users/vassa/OneDrive/Imágenes/miniaturas/drive.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/sendImages",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"sendImages"
 							]
 						}
 					},
