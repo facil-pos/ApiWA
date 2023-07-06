@@ -27,9 +27,9 @@ const getMaxMessageLimit = async (username) => {
         text: 'SELECT num_msgs FROM users WHERE username = $1',
         values: [username],
     };
-    const result = await pool.query(query);
-    const numMsgs = result.rows[0]?.num_msgs || 0;
-    return numMsgs;
+    const result = await pool.query(query); // Ejecutar la consulta
+    const numMsgs = result.rows[0]?.num_msgs || 0; // Obtener el número de mensajes o 0 si no hay resultados
+    return numMsgs; // Devolver el número de mensajes
 };
 
 // Verificar si el usuario ha alcanzado su límite diario de mensajes
@@ -38,18 +38,19 @@ const hasReachedMessageLimit = async (username) => {
         text: 'SELECT COUNT(*) AS message_count FROM message WHERE usuario = $1 AND created_at >= current_date',
         values: [username],
     };
-    const result = await pool.query(query);
+    const result = await pool.query(query); 
     const messageCount = result.rows[0]?.message_count || 0;
     const maxMsgs = await getMaxMessageLimit(username);
     return messageCount >= maxMsgs;
 };
 
-
+// Enviar mensajes de texto
 router.post('/sendImages', requireLogin, upload.array('images'), async (req, res) => {
-    const numbers = req.body.numbers.split(',');
-    const message = req.body.message;
-    const username = req.session?.user?.username;
+    const numbers = req.body.numbers.split(','); // Obtener los números de teléfono
+    const message = req.body.message; // Obtener el mensaje
+    const username = req.session?.user?.username; // Obtener el nombre de usuario
 
+    // Obtener el cliente de WhatsApp del usuario
     const clientUser = (await pool.query({
         text: 'SELECT client FROM users WHERE username = $1',
         values: [username],
@@ -89,8 +90,6 @@ router.post('/sendImages', requireLogin, upload.array('images'), async (req, res
         text: 'INSERT INTO message(client, numbers, message, images, created_at, usuario) VALUES($1, $2, $3, $4, $5, $6)',
         values: [clientUser, numbersString, message, imageNames, new Date(), username],
     }; */
-
-
 
     const query = {
         text: 'INSERT INTO message(client, numbers,message, images, created_at, usuario) VALUES($1, $2, $3, $4, $5, $6)',
